@@ -15,7 +15,7 @@
 
 ## 食用方法
 
-1. 克隆仓库`git clone https://github.com/ZzzzzzzSkyward/LearnJapaneseSentence.git`
+1. 克隆仓库`git clone --depth=1 https://github.com/ZzzzzzzSkyward/LearnJapaneseSentence.git`
 2. 进入仓库`cd LearnJapaneseSentence`
 3. 安装python依赖
    1. 普通依赖`pip install -r requirements.txt`
