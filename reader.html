@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JSON File Reader</title>
+    <style>
+        .entry {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-size: 2em;
+            display: flex;
+            background-color: #ec9a9a61;
+            border: 1px solid black;
+            position: sticky;
+            top: 0;
+            flex-basis: fit-content;
+            align-content: center;
+            align-items: end;
+            color: #000000d4;
+        }
+
+        .freq {
+            display: flex;
+            font-size: 0.5em;
+            color: #2c00ffb0;
+        }
+
+        body {
+            font-family: "HiraginoMin W3", PMingLiu, Century, 宋体, Arial, 等线;
+            font-size: 20px;
+        }
+
+        .hidden-entry .meaning {
+            max-height: 0px;
+            overflow-y: hidden;
+        }
+    </style>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+
+    <input type="file" id="jsonFileInput" onchange="loadJsonFile()" />
+
+    <div id="entries"></div>
+
+    <script>
+        function loadJsonFile() {
+            const fileInput = document.getElementById( 'jsonFileInput' );
+            const file = fileInput.files[ 0 ];
+            const reader = new FileReader();
+
+            reader.onload = function ( e ) {
+                try {
+                    const jsonData = JSON.parse( e.target.result );
+                    renderEntries( jsonData );
+                } catch ( error ) {
+                    alert( 'Error parsing JSON file: ' + error );
+                }
+            };
+
+            reader.onerror = function () {
+                alert( 'Error reading file.' );
+            };
+
+            reader.readAsText( file );
+        }
+        let hidden = false;
+
+        function HideAllEntries() {
+            hidden = !hidden;
+            const entriesContainer = document.getElementById( 'entries' );
+            if ( hidden ) {
+                entriesContainer.classList.add( "hidden-entry" );
+            } else {
+                entriesContainer.classList.remove( "hidden-entry" );
+            }
+        }
+
+        function renderEntries( data ) {
+            const entriesContainer = document.getElementById( 'entries' );
+            entriesContainer.innerHTML = ''; // 清空现有内容
+            data.forEach( entry => {
+                const entryDiv = document.createElement( 'div' );
+                entryDiv.className = 'entry';
+
+                // 标题
+                const titleDiv = document.createElement( 'div' );
+                titleDiv.className = 'title';
+                titleDiv.textContent = entry[ 0 ];
+                entryDiv.appendChild( titleDiv );
+                //添加一个锚点
+                const anchor = document.createElement( 'a' );
+                anchor.href = "#" + entry[ 0 ];
+                entryDiv.append( anchor );
+                //监听点击事件
+                titleDiv.addEventListener( 'click', () => {
+                    anchor.click();
+                    HideAllEntries();
+                    entryDiv.scrollIntoView();
+                } )
+
+                // 频数
+                const freqDiv = document.createElement( 'div' );
+                freqDiv.className = 'freq';
+                freqDiv.textContent = entry[ 1 ];
+                titleDiv.appendChild( freqDiv );
+
+                // 含义
+                const meaningDiv = document.createElement( 'div' );
+                meaningDiv.className = 'meaning';
+                meaningDiv.innerHTML = entry[ 2 ];
+                entryDiv.appendChild( meaningDiv );
+
+                entriesContainer.appendChild( entryDiv );
+            } );
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+#meaning-container * {
+    font-size: 1em;
+}
+
+#meaning-container p {
+    padding: 0.1em;
+    margin: 0.1em;
+}
+
+#meaning-container code {
+    background-color: #f4f4f482;
+}
+
+#meaning-container strong {
+    border: dashed 0.1em #00000042;
+}
+
+#meaning-container ul>li::marker {
+    content: '';
+}
+
+#meaning-container ul {
+    margin-left: 1em;
+    padding-left: 0;
+}
+
+#meaning-container h3 {
+    font-size: 1.5em;
+    color: #ea6a43;
+    border-block-end-color: #ecbe83;
+    border-block-end-width: 0.2em;
+    border-block-end-style: solid;
+}
+
+#meaning-container ul,
+#meaning-container ol,
+#meaning-container li {
+    background-color: #ffb6b670;
+    box-shadow: 0px 0px 5px #66666630;
+    filter: hue-rotate(30deg);
+}
