@@ -16,4 +16,5 @@ python-lzo
 readmdict
 rich
 spacy
+serpapi
 tqdm
