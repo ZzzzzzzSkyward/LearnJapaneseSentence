@@ -15,6 +15,6 @@ pykakasi
 python-lzo
 readmdict
 rich
-spacy
 serpapi
+spacy
 tqdm

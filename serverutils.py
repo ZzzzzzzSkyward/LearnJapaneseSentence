@@ -1,3 +1,4 @@
+import Levenshtein
 import romaji_jp
 from japanese_word import JAPANESE_WORD
 import requests
@@ -83,7 +84,7 @@ def process_lookup(text):
     weblio = lookup_weblio(text)
     jisho = lookup_jisho(text)
     if not meaning:
-        meaning = ""
+        meaning = get_relative(text)
     if jisho:
         meaning += jisho
     if weblio:
@@ -123,8 +124,42 @@ md.load_json()
 md.textify = lambda text: text
 
 
+def process_pat(match):
+    text = match.group(0)
+    x = text[text.find('=')+1:len(text)-1]
+    return f"<a href='entry://{x}'>{x}</a>"
+
+
+relative_prompt = '''<h3>你找的词可能是</h3><ol>
+'''
+relative_prompt_end = '''</ol>'''
+max_found = 200
+min_found = 10
+max_dist = 5
+
+
+def get_relative(token):
+    min_dist = 1
+    found = []
+    while min_dist < max_dist:
+        for k in md.index:
+            d = Levenshtein.distance(token, k, score_cutoff=min_dist)
+            if d <= min_dist:
+                found.append(k)
+        if len(found) > min_found:
+            break
+        min_dist += 1
+    found = found[:max_found]
+    return relative_prompt+"\n".join([f"<li><a href='entry://{i}'>{i}</a></li>" for i in found])+relative_prompt_end
+
+
 def get_meaning(token):
-    return md.find(token)
+    ret = md.find(token)
+    # process @@@LINK=
+    while ret.find("@@@LINK") >= 0:
+        ret = re.sub(re.compile("[@]{3}LINK=([^\n]+)[\n]?", re.RegexFlag.MULTILINE),
+                     process_pat, ret)
+    return ret
 
 
 def lookup_weblio(word):
@@ -162,6 +197,7 @@ def process_jisho(text):
     text = text.replace("Adverb", "副词")
     text = text.replace("Noun", "名词")
     text = text.replace("See also", "参见")
+    text = text.replace("Antonym:", "反义词：")
     return text
 
 

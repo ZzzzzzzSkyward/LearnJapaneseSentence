@@ -28,7 +28,7 @@
             <el-select v-model="dict_history" filterable placeholder="历史" class="dict-history"
                 @change="OnSelectHistoryItem">
                 <el-option v-for="item in dict_history_items" :key="item.api + item.text + item.uid || '0'"
-                    :label="item.api + '|' + item.text" :value="item" />
+                    :label="reverse_lookup_funcs[item.api].substring(0, 1) + '|' + item.text" :value="item" />
             </el-select>
         </div>
         <div id="meaning-container">
@@ -68,6 +68,11 @@ const funcs = {
         endpoint: "memorize",
         cb: ( r ) => process_memorize( r )
     }
+}
+const reverse_lookup_funcs = {};
+for ( let i in funcs ) {
+    if ( funcs[ i ].endpoint )
+        reverse_lookup_funcs[ funcs[ i ].endpoint ] = i;
 }
 const querySearch = ( queryString, cb ) => {
     let results = [];
@@ -396,7 +401,8 @@ function process_lookup ( response ) {
     ctn.innerHTML = "";
     if ( data ) {
         ctn.innerHTML = data.content;
-        postprocess_lookup( ctn );
+        setTimeout( () =>
+            postprocess_lookup( ctn ), 0 );
         lookup_cache[ data.text ] = response;
     }
 }
@@ -454,6 +460,18 @@ function postprocess_lookup ( ctn ) {
                 SendLookupRequest( h.substring( h.indexOf( "content/" ) + 8 ) )
                 return true
             } );
+        }
+        else if ( aa.href.indexOf( "entry://" ) >= 0 ) {
+            //mdict search
+            let h = aa.getAttribute( "href" );
+            let keyword = h.match( /(?<=entry:\/\/)[^【]+/ )[ 0 ];
+            if ( keyword ) {
+                aa.addEventListener( 'click', function ( event ) {
+                    event.preventDefault();
+                    SendLookupRequest( keyword );
+                    return true;
+                } );
+            }
         }
     }
 }
@@ -638,60 +656,5 @@ export default {
 }
 </script>
 <style>
-#dict-container {
-    font-size: 2vw;
-}
 
-#dict-container .el-switch__core {
-    border-radius: 0.1em;
-}
-
-.dict-input-item p {
-    line-height: 1.5em;
-    padding: 0;
-    margin: 0.1em;
-    margin-block-start: 0;
-    margin-block-end: 0;
-}
-
-.dict-func {
-    color: rgb(143, 9, 9);
-    cursor: alias;
-}
-
-.dict-input {
-    position: sticky !important;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    justify-content: space-between;
-    background-color: rgba(255, 255, 255, 0.082);
-    opacity: 0.5;
-    transform: all 0.1s ease-in-out 0s;
-}
-.dict-input:hover{
-    background-color: rgba(255, 255, 255, 0.799);
-    opacity: 1;
-}
-.dict-input .el-input__wrapper{
-    --el-input-bg-color:rgba(255, 255, 255, 0.199);
-}
-.dict-input .el-select{
-    --el-fill-color-blank:rgba(255, 255, 255, 0.199);
-}
-
-.dict-input .inline-input {
-    flex: 4;
-}
-
-.dict-input .dict-history {
-    flex: 1;
-}
-
-.dict-input .dict-input-web-switch {
-    --el-switch-off-color: rgb(255, 209, 58);
-    margin-left: 0.1em;
-    margin-right: 0.1em;
-    --el-border-radius-circle: 4%;
-}
 </style>

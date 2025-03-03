@@ -2,27 +2,41 @@
 The server backend
 '''
 
+import os
 import sl
-from flask import Flask, send_from_directory, request, jsonify, render_template
+from flask import Flask, send_from_directory, request, jsonify, render_template, redirect, url_for, Response
 from flask_compress import Compress
 from flask_caching import Cache
 from serverutils import *
 import webbrowser
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)
 app.json.ensure_ascii = False
 app.config['COMPRESS_REGISTER'] = False
+app.config['STATIC_FOLDER'] = None
 compress = Compress(app)
 app.config['CACHE_TYPE'] = 'SimpleCache'
 app.config['CACHE_DEFAULT_TIMEOUT'] = 3000  # 缓存时间（秒）
 cache = Cache(app)
+# 将 /api/xxx 重定向到 /xxx
 
 
+@app.route('/api/<path:subpath>')
+def api_redirect(subpath):
+    return redirect(url_for(subpath, **request.args))
+
+
+@app.route("/", defaults={'filename': 'index.html'})
 @app.route("/<path:filename>")
 def index(filename):
-    if not filename:
-        filename = "index.html"
-    return send_from_directory("./", filename)
+    d = os.getcwd()
+    subd = "front/dist/"
+    if os.path.exists(os.path.join(d, filename)):
+        return send_from_directory(d, filename)
+    subpath = os.path.join(d, subd, filename)
+    if os.path.exists(subpath):
+        return send_from_directory(os.path.join(d, subd), filename)
+    return Response('', 404)
 
 
 def open_browser():
@@ -31,7 +45,11 @@ def open_browser():
 
 
 def ValidFilter(response):
-    if response.status_code != 200:
+    if isinstance(response, tuple):
+        response, code = response
+    else:
+        code = response.status_code
+    if code != 200:
         return False
     return True
 
@@ -130,4 +148,4 @@ if __name__ == "__main__":
     for i in args:
         if 'port' in i:
             port = int(i[i.find('=')+1:])
-    app.run(host="localhost", port=5009, debug=debug)
+    app.run(host="localhost", port=port or 5009, debug=debug)

@@ -39,3 +39,63 @@
     box-shadow: 0px 0px 5px #66666630;
     filter: hue-rotate(30deg);
 }
+
+#dict-container {
+    font-size: 2vw;
+}
+
+#dict-container .el-switch__core {
+    border-radius: 0.1em;
+}
+
+.dict-input-item p {
+    line-height: 1.5em;
+    padding: 0;
+    margin: 0.1em;
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
+
+.dict-func {
+    color: rgb(143, 9, 9);
+    cursor: alias;
+}
+
+.dict-input {
+    position: sticky !important;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.082);
+    opacity: 0.5;
+    transform: all 0.1s ease-in-out 0s;
+}
+
+.dict-input:hover {
+    background-color: rgba(255, 255, 255, 0.799);
+    opacity: 1;
+}
+
+.dict-input .el-input__wrapper {
+    --el-input-bg-color: rgba(255, 255, 255, 0.199);
+}
+
+.dict-input .el-select {
+    --el-fill-color-blank: rgba(255, 255, 255, 0.199);
+}
+
+.dict-input .inline-input {
+    flex: 4;
+}
+
+.dict-input .dict-history {
+    flex: 1;
+}
+
+.dict-input .dict-input-web-switch {
+    --el-switch-off-color: rgb(255, 209, 58);
+    margin-left: 0.1em;
+    margin-right: 0.1em;
+    --el-border-radius-circle: 4%;
+}

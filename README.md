@@ -56,4 +56,4 @@ flask
 
 ## 预览
 
-![preview](Z:\LearnJapaneseSentence\preview.png)
+![preview](preview.png)
